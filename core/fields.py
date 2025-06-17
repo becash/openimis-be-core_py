@@ -30,3 +30,17 @@ class DateTimeField(models.DateTimeField):
         if hasattr(value, 'to_ad_datetime'):
             value = value.to_ad_datetime()
         return models.DateTimeField().get_prep_value(value)
+
+class TimeField(models.TimeField):
+    description = "Calendar-aware Time field"
+
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return None
+        from core import datetime
+        return datetime.time(value.hour, value.minute, value.second, value.microsecond)
+
+    def get_prep_value(self, value):
+        if hasattr(value, 'to_ad_time'):
+            value = value.to_ad_time()
+        return models.TimeField().get_prep_value(value)

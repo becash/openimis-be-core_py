@@ -38,7 +38,7 @@ class TimeField(models.TimeField):
         if value is None:
             return None
         from core import datetime
-        return datetime.time(value.hour, value.minute, value.second, value.microsecond)
+        return datetime.time.from_ad_time(value)
 
     def get_prep_value(self, value):
         if hasattr(value, 'to_ad_time'):

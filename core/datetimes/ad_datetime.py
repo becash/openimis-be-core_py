@@ -2,7 +2,7 @@ import sys
 import datetime as py_datetime
 from .shared import datetimedelta
 
-__all__ = ["tzinfo", "timezone", "AdDate", "date", "AdDatetime", "datetime"]
+__all__ = ["tzinfo", "timezone", "AdDate", "date", "AdDatetime", "datetime","time"]
 
 """
 Standard Gregorian date,
@@ -172,3 +172,57 @@ class AdDatetime(py_datetime.datetime):
 
 
 datetime = AdDatetime
+
+
+class AdTime(py_datetime.time):
+    @classmethod
+    def now(cls):
+        return cls.from_ad_time(py_datetime.datetime.now().time())
+
+    @classmethod
+    def from_ad_time(cls, value):
+        if value is None:
+            return None
+        return AdTime(value.hour, value.minute, value.second, value.microsecond)
+
+    def to_ad_time(self):
+        return self
+
+    def __hash__(self):
+        return super().__hash__()
+
+    def _time_operation(self, operation, other):
+        if not other:
+            return operation(other)
+        if isinstance(other, py_datetime.time):
+            return operation(other)
+
+    def __eq__(self, other):
+        return self._time_operation(super(AdTime, self).__eq__, other)
+
+    def __gt__(self, other):
+        return self._time_operation(super(AdTime, self).__gt__, other)
+
+    def __lt__(self, other):
+        return self._time_operation(super(AdTime, self).__lt__, other)
+
+    @classmethod
+    def _convert_op_res(cls, res):
+        if isinstance(res, py_datetime.time):
+            return AdTime.from_ad_time(res)
+        return res
+
+    def __repr__(self):
+        L = [self.hour, self.minute, self.second, self.microsecond]
+        if L[-1] == 0:
+            del L[-1]
+        if L[-1] == 0:
+            del L[-1]
+        s = "%s.time(%s)" % (self.__class__.__module__,
+                            ", ".join(map(str, L)))
+        if self.fold:
+            assert s[-1:] == ")"
+            s = s[:-1] + ", fold=1)"
+        return s
+
+time = AdTime

@@ -40,7 +40,7 @@ class HistoryModel(DirtyFieldsMixin, models.Model):
     history = HistoricalRecords(
         inherit=True,
     )
-
+    bill_code = models.CharField(db_column="BillCode", null=True)
 
     @property
     def uuid(self):
